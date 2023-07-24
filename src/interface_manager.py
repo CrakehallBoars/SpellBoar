@@ -11,7 +11,7 @@ from card_identificator import CardIdentificator
 from card_separator import CardSeparator
 
 VIEWPORT_MAX: tuple[int, int] = (1280,720)
-CROPPED_MAX : tuple[int, int] = (320,240)
+CARD_MAX : tuple[int, int] = (320,240)
 
 class Vector2():
     def __init__(self, x: int, y:int) -> None:
@@ -24,7 +24,7 @@ class Vector2():
 class InterfaceManager():
     def __init__(self) -> None:
         # Configure camera capture
-        self.camera = cv2.VideoCapture("http://192.168.0.12:8080/video")
+        self.camera = cv2.VideoCapture("http://192.168.0.13:8080/video")
 
         self.window_setup()
 
@@ -66,12 +66,23 @@ class InterfaceManager():
         main_layout.addWidget(self.canny_image_label, 1, 5, 1, 1)
 
         # Layout to show reference images
-        self.reference_images_layout = QtWidgets.QVBoxLayout()
+        #self.reference_images_layout = QtWidgets.QVBoxLayout()
+        self.reference_image_label = QtWidgets.QLabel()
+        main_layout.addWidget(self.reference_image_label, 0, 6, 3, 1)
 
         # Define function to be triggered on mouse clicked
         self.camera_viewport.mousePressEvent = self.on_mouse_click
 
         self.main_window.show()
+
+    def add_new_reference_image(self, new_image: numpy.ndarray) -> None:
+        self.reference_images.append(new_image)
+
+        pixmap_image = self.numpy_color_image_to_pixmap(new_image, CARD_MAX)
+
+        new_label = QtWidgets.QLabel()
+        new_label.setPixmap(pixmap_image)
+        self.reference_images_layout.addWidget(new_label)
 
     def qimage_to_pixmap(self, qimage: QtGui.QImage, max_size: tuple[int, int]) -> QtGui.QPixmap:
         max_height, max_width = max_size
@@ -98,16 +109,22 @@ class InterfaceManager():
         y = event.pos().y() * self.current_frame_scale.y
 
         sucess, cropped_card, canny_image = self.card_separator.separate_card(self.current_frame, x, y)
+        canny_image = self.card_separator.canny_image
+        
+        canny_pixmap = self.numpy_grayscale_image_to_pixmap(canny_image, CARD_MAX)
+        self.canny_image_label.setPixmap(canny_pixmap)
+
         if not sucess:
             return
         
-        cropped_card_pixmap = self.numpy_color_image_to_pixmap(cropped_card, CROPPED_MAX)
+        cropped_card_pixmap = self.numpy_color_image_to_pixmap(cropped_card, CARD_MAX)
         self.cropped_image_label.setPixmap(cropped_card_pixmap)
 
-        canny_pixmap = self.numpy_grayscale_image_to_pixmap(canny_image, CROPPED_MAX)
-        self.canny_image_label.setPixmap(canny_pixmap)
 
-        #identified_card = self.card_identificator.identify_card(separated_card)
+        identified_card = self.card_identificator.identify_card(cropped_card)
+        identified_card_pixmap = self.numpy_color_image_to_pixmap(identified_card, CARD_MAX)
+        self.reference_image_label.setPixmap(identified_card_pixmap)
+        #self.add_new_reference_image(identified_card)
     
     def update(self) -> None:
         ret, frame = self.camera.read()

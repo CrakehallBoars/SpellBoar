@@ -19,15 +19,16 @@ class CardSeparator():
         if(preprocessed_image.size == 0):
             return error_return
         
-        canny_image = self.get_binary_canny_image(preprocessed_image)
-        all_contours = self.get_image_contours(canny_image)
+        # Storage canny  image as attribute to not be freed after return
+        self.canny_image = self.get_binary_canny_image(preprocessed_image)
+        all_contours = self.get_image_contours(self.canny_image)
         card_contour = self.get_contour_around_point(all_contours, mouse_x, mouse_y)
 
         if(card_contour == None):
-            return error_return
+            return (False, self.canny_image, numpy.zeros((0,0)))
         
         separated_card = self.crop_image(frame, card_contour)
-        return True, separated_card, canny_image
+        return True, separated_card, self.canny_image
 
     def preprocess_image(self, image: numpy.ndarray) -> numpy.ndarray:
         """Apply 7x7 gaussian blur on image, then return it on gray scale"""
@@ -77,8 +78,5 @@ class CardSeparator():
         x, y, w, h = contour
         cropped_image = raw_image[y:y+h, x:x+w].copy()
         #cv2.imshow("crop", cropped_image)
-        print(raw_image.shape)
-        print(cropped_image.shape)
-        print(type(cropped_image))
         return cropped_image
         
