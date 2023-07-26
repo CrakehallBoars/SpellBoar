@@ -6,6 +6,7 @@ THRESHOLD1 = 23
 THRESOLD2 = 20
 
 AREA_THRESOLD = 500
+DILATATION = 5
 
 class CardSeparator():
     def __init__(self) -> None:
@@ -44,7 +45,7 @@ class CardSeparator():
         # Find edges around of image on pos
         canny_image = cv2.Canny(preprocessed_image, threshold1, threshold2)
 
-        kernel = numpy.ones((5, 5))
+        kernel = numpy.ones((DILATATION, DILATATION))
         dilatated_image = cv2.dilate(canny_image, kernel, iterations=1)
 
         #cv2.imshow("canny", dilatated_image)
