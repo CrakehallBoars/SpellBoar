@@ -1,5 +1,6 @@
 import sys
 import numpy
+import time
 
 from PyQt6 import QtWidgets
 from PyQt6 import QtCore
@@ -11,7 +12,7 @@ from card_identificator import CardIdentificator
 from card_separator import CardSeparator
 
 VIEWPORT_MAX: tuple[int, int] = (1280,720)
-CARD_MAX : tuple[int, int] = (320,240)
+CARD_MAX : tuple[int, int] = (480,360)
 
 class Vector2():
     def __init__(self, x: int, y:int) -> None:
@@ -66,9 +67,17 @@ class InterfaceManager():
         main_layout.addWidget(self.canny_image_label, 1, 5, 1, 1)
 
         # Layout to show reference images
-        #self.reference_images_layout = QtWidgets.QVBoxLayout()
+        self.reference_images_layout = QtWidgets.QVBoxLayout()
+        main_layout.addLayout(self.reference_images_layout, 0, 6, 3, 1)
+
         self.reference_image_label = QtWidgets.QLabel()
-        main_layout.addWidget(self.reference_image_label, 0, 6, 3, 1)
+        self.crop_time_label = QtWidgets.QLabel()
+        self.match_time_label = QtWidgets.QLabel()
+        self.total_time_label = QtWidgets.QLabel()
+        self.reference_images_layout.addWidget(self.reference_image_label)
+        self.reference_images_layout.addWidget(self.crop_time_label)
+        self.reference_images_layout.addWidget(self.match_time_label)
+        self.reference_images_layout.addWidget(self.total_time_label)
 
         # Define function to be triggered on mouse clicked
         self.camera_viewport.mousePressEvent = self.on_mouse_click
@@ -103,12 +112,15 @@ class InterfaceManager():
     
     def on_mouse_click(self, event: QtGui.QMouseEvent) -> None:
         print("clicked")
+        start = time.time()
         
         # Normalize mouse position, because frame size is different from screen size
         x = event.pos().x() * self.current_frame_scale.x
         y = event.pos().y() * self.current_frame_scale.y
 
+        crop_start = time.time()
         sucess, cropped_card, canny_image = self.card_separator.separate_card(self.current_frame, x, y)
+        crop_end = time.time()
         canny_image = self.card_separator.canny_image
         
         canny_pixmap = self.numpy_grayscale_image_to_pixmap(canny_image, CARD_MAX)
@@ -121,10 +133,17 @@ class InterfaceManager():
         self.cropped_image_label.setPixmap(cropped_card_pixmap)
 
 
+        match_start = time.time()
         identified_card = self.card_identificator.identify_card(cropped_card)
+        match_end = time.time()
+
         identified_card_pixmap = self.numpy_color_image_to_pixmap(identified_card, CARD_MAX)
         self.reference_image_label.setPixmap(identified_card_pixmap)
+        end = time.time()
         #self.add_new_reference_image(identified_card)
+        self.crop_time_label.setText(f"Crop time: {(crop_end - crop_start)*1000}ms")
+        self.match_time_label.setText(f"Match time: {(match_end - match_start)*1000}ms")
+        self.total_time_label.setText(f"Total time: {(end - start)*1000}ms")
     
     def update(self) -> None:
         ret, frame = self.camera.read()
