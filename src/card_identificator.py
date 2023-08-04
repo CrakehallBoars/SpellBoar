@@ -1,3 +1,10 @@
+# 04/08/2022
+# Leonardo Di Credico         11202130507
+# Anthony Hlebania            11202131843 
+# Fernando Hiroaki Suzuki     11202130281 
+# Fernando Astolfo Dos Santos 11201920813 
+# Instruções de Execução: ./run.sh
+
 import os
 import numpy
 from PIL import Image as PIL_Image
