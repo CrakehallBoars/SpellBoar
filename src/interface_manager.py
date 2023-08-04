@@ -46,7 +46,7 @@ class InterfaceManager():
         self.app = QtWidgets.QApplication([])
 
         self.main_window = QtWidgets.QMainWindow()
-        self.main_window.setWindowTitle("SpellBoar")
+        self.main_window.setWindowTitle("Crakehall Boars - SpellBoar")
 
         main_widget = QtWidgets.QWidget()
         main_layout = QtWidgets.QGridLayout()
