@@ -62,7 +62,6 @@ class InterfaceManager():
 
         # Label to display camera output
         self.camera_viewport = QtWidgets.QLabel()
-        self.camera_viewport.size
         main_layout.addWidget(self.camera_viewport, 0, 0, 3, 4)
 
         # Label to show cropped image
@@ -71,11 +70,11 @@ class InterfaceManager():
 
         # Label to show canny image
         self.canny_image_label = QtWidgets.QLabel()
-        main_layout.addWidget(self.canny_image_label, 1, 5, 1, 1)
+        main_layout.addWidget(self.canny_image_label, 1, 5, 2, 2)
 
         # Layout to show reference images
         self.reference_images_layout = QtWidgets.QVBoxLayout()
-        main_layout.addLayout(self.reference_images_layout, 0, 6, 3, 1)
+        main_layout.addLayout(self.reference_images_layout, 0, 6, 1, 1)
 
         self.reference_image_label = QtWidgets.QLabel()
         self.crop_time_label = QtWidgets.QLabel()
@@ -101,7 +100,7 @@ class InterfaceManager():
         self.reference_images_layout.addWidget(new_label)
 
     def qimage_to_pixmap(self, qimage: QtGui.QImage, max_size: tuple[int, int]) -> QtGui.QPixmap:
-        max_height, max_width = max_size
+        max_width, max_height = max_size
         pixmap = QtGui.QPixmap.fromImage(qimage)
         return pixmap.scaled(max_width, max_height, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
 
@@ -118,7 +117,6 @@ class InterfaceManager():
         return self.qimage_to_pixmap(converted_image, max_size)
     
     def on_mouse_click(self, event: QtGui.QMouseEvent) -> None:
-        print("clicked")
         start = time.time()
         
         # Normalize mouse position, because frame size is different from screen size
