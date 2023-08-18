@@ -3,7 +3,7 @@ import sys
 import os
 from colorama import Fore
 
-sys.path.append()
+sys.path.append("")
 from src.card_identificator import CardIdentificator
 
 IMAGE_FOLDER = "tests/images"
