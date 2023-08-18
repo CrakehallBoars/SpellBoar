@@ -13,7 +13,7 @@ THRESHOLD1 = 23
 THRESOLD2 = 20
 
 AREA_THRESOLD = 500
-DILATATION = 5
+DILATATION = 2
 
 class CardSeparator():
     def __init__(self) -> None:
@@ -81,7 +81,6 @@ class CardSeparator():
         return None
     
     def crop_image(self,raw_image: numpy.ndarray, contour):
-        print("crop")
         """Crops the image around the given contour"""
         x, y, w, h = contour
         cropped_image = raw_image[y:y+h, x:x+w].copy()
