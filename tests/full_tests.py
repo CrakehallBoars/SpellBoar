@@ -1,11 +1,10 @@
-import PIL
 import sys
 import os
-import numpy
 from colorama import Fore
 import cv2
 
-sys.path.append("")
+cur_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(f"{cur_path}/../src")
 from card_identificator import CardIdentificator
 from card_separator import CardSeparator
 from interface_manager import Vector2
