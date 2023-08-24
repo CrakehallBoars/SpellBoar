@@ -60,7 +60,7 @@ class CardIdentificator():
             # Aplica o teste da razão para filtrar os bons matches
             good_matches = []
             for m, n in matches:
-                if m.distance < 0.9 * n.distance:
+                if m.distance < 0.99 * n.distance:
                     good_matches.append(m)
 
             # Calcula a distância média entre os matches
