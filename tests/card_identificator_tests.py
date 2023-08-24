@@ -3,7 +3,8 @@ import sys
 import os
 from colorama import Fore
 
-sys.path.append("")
+cur_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(f"{cur_path}/..")
 from src.card_identificator import CardIdentificator
 
 IMAGE_FOLDER = "tests/images"
