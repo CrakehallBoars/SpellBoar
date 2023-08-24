@@ -34,6 +34,9 @@ class InterfaceManager():
         # Configure camera capture
         self.camera = cv2.VideoCapture(0)
 
+        #Backup image when there is no camera
+        self.backup_image = cv2.imread("tests/images/full_scene/B.png")
+
         self.window_setup()
 
         # Initialize image storage variables
@@ -49,6 +52,7 @@ class InterfaceManager():
         self.card_separator = CardSeparator()
         self.card_identificator = CardIdentificator()
 
+
     def window_setup(self) -> None:
         self.app = QtWidgets.QApplication([])
 
@@ -63,6 +67,8 @@ class InterfaceManager():
         # Label to display camera output
         self.camera_viewport = QtWidgets.QLabel()
         main_layout.addWidget(self.camera_viewport, 0, 0, 3, 4)
+        self.reference_image_checkbox = QtWidgets.QCheckBox("Modo de teste sem câmera")
+        main_layout.addWidget(self.reference_image_checkbox, 4, 0, 1, 1)
 
         # Label to show cropped image
         self.cropped_image_label = QtWidgets.QLabel()
@@ -151,8 +157,11 @@ class InterfaceManager():
         self.total_time_label.setText(f"Total time: {(end - start)*1000}ms")
     
     def update(self) -> None:
-        ret, frame = self.camera.read()
-        
+        if self.camera.isOpened() and not self.reference_image_checkbox.isChecked():
+            ret, frame = self.camera.read()
+        else:
+            frame = self.backup_image
+
         camera_pixmap = self.numpy_color_image_to_pixmap(frame, VIEWPORT_MAX)
         self.current_frame = frame
         scale_x = frame.shape[1] / camera_pixmap.size().width()
